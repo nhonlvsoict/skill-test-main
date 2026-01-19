@@ -2,9 +2,10 @@ const { env } = require("../config");
 const { ApiError, verifyToken, generateCsrfHmacHash } = require("../utils");
 
 const csrfProtection = (req, res, next) => {
-  const csrfToken = req.headers["x-csrf-token"];
+  const csrfToken = req.cookies["csrfToken"];
   const accessToken = req.cookies.accessToken;
-
+  console.log("CSRF Token:", csrfToken);
+  console.log("Access Token:", accessToken);
   if (!csrfToken || typeof csrfToken !== "string") {
     throw new ApiError(400, "Invalid csrf token");
   }
