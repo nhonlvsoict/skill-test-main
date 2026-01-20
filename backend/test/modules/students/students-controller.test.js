@@ -1,3 +1,41 @@
+// Mock all external dependencies BEFORE any imports
+jest.mock('../../../src/config/env', () => ({
+    RESEND_API_KEY: 'test-api-key',
+    JWT_SECRET: 'test-secret',
+    NODE_ENV: 'test',
+    UI_URL: 'http://localhost:3000',
+    PORT: 5000,
+    DATABASE_URL: 'test-db'
+}));
+
+jest.mock('../../../src/config', () => ({
+    env: {
+        RESEND_API_KEY: 'test-api-key',
+        JWT_SECRET: 'test-secret',
+        NODE_ENV: 'test',
+        UI_URL: 'http://localhost:3000',
+        PORT: 5000,
+        DATABASE_URL: 'test-db'
+    }
+}));
+
+jest.mock('resend', () => {
+    return {
+        Resend: jest.fn().mockImplementation(() => ({
+            emails: {
+                send: jest.fn()
+            }
+        }))
+    };
+});
+
+jest.mock('../../../src/modules/students/students-service');
+
+jest.mock('express-async-handler', () => {
+    return (fn) => fn;
+});
+
+// Now import the modules
 const {
     handleGetAllStudents,
     handleGetStudentDetail,
@@ -12,14 +50,6 @@ const {
     setStudentStatus,
     updateStudent
 } = require('../../../src/modules/students/students-service');
-
-// Mock the students-service module
-jest.mock('../../../src/modules/students/students-service');
-
-// Mock express-async-handler to pass through the async function
-jest.mock('express-async-handler', () => {
-    return (fn) => fn;
-});
 
 describe('Students Controller', () => {
     let req, res, next;
@@ -237,7 +267,7 @@ describe('Students Controller', () => {
                 section: 'A',
                 roll: 1
             };
-            req.parans = { id: studentId }; // Note: typo in original code 'parans' instead of 'params'
+            req.params = { id: studentId };
             getStudentDetail.mockResolvedValue(mockStudent);
 
             // Act
@@ -251,7 +281,7 @@ describe('Students Controller', () => {
         it('should handle student not found', async () => {
             // Arrange
             const studentId = '999';
-            req.parans = { id: studentId };
+            req.params = { id: studentId };
             getStudentDetail.mockResolvedValue(null);
 
             // Act
@@ -265,7 +295,7 @@ describe('Students Controller', () => {
         it('should handle service errors', async () => {
             // Arrange
             const error = new Error('Database error');
-            req.parans = { id: '123' };
+            req.params = { id: '123' };
             getStudentDetail.mockRejectedValue(error);
 
             // Act & Assert
