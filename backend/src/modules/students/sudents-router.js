@@ -7,7 +7,7 @@ const {
     updateStudentSchema, 
     updateStudentStatusSchema,
     getStudentDetailSchema 
-} = require("./students-validation");
+} = require("./students-schema");
 
 router.get("", studentController.handleGetAllStudents);
 router.post("", validateRequest(addStudentSchema), studentController.handleAddStudent);
