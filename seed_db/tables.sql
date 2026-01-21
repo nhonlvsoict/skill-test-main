@@ -425,6 +425,29 @@ EXCEPTION
 END;
 $BODY$;
 
+--functions
+DROP FUNCTION IF EXISTS delete_student(INTEGER);
+CREATE OR REPLACE FUNCTION public.delete_student(_user_id INTEGER)
+RETURNS TABLE(status BOOLEAN, message TEXT, description TEXT)
+LANGUAGE plpgsql
+AS $BODY$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM users WHERE id = _user_id AND role_id = 3) THEN
+        RETURN QUERY
+            SELECT false, 'Student does not exist', NULL::TEXT;
+        RETURN;
+    END IF;
+    DELETE FROM user_profiles WHERE user_id = _user_id;
+    DELETE FROM users WHERE id = _user_id;
+
+    RETURN QUERY
+        SELECT true, 'Student deleted successfully', NULL::TEXT;
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN QUERY
+            SELECT false, 'Unable to delete student', SQLERRM;
+END;
+$BODY$;
 
 DROP FUNCTION IF EXISTS public.get_dashboard_data(INTEGER);
 CREATE OR REPLACE FUNCTION get_dashboard_data(_user_id INTEGER)

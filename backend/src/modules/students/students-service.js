@@ -70,14 +70,18 @@ const setStudentStatus = async ({ userId, reviewerId, status }) => {
 }
 
 const deleteStudent = async (id) => {
-    await checkStudentId(id);
-    
-    const affectedRow = await deleteStudentFromDB(id);
-    if (affectedRow <= 0) {
-        throw new ApiError(500, "Unable to delete student");
+    try {
+        await checkStudentId(id);
+
+        const result = await deleteStudentFromDB(id);
+        if (!result.status) {
+            throw new ApiError(500, result.message);
+        }
+        
+        return { message: "Student deleted successfully" };
+    } catch (error) {
+        throw new ApiError(500, error.message);
     }
-    
-    return { message: "Student deleted successfully" };
 }
 
 module.exports = {

@@ -112,17 +112,10 @@ const findStudentToUpdate = async (paylaod) => {
 }
 
 const deleteStudentFromDB = async (id) => {
-    const query = `
-        BEGIN TRANSACTION;
-        DELETE FROM profiles
-        WHERE user_id = $1;
-        DELETE FROM users
-        WHERE id = $1;
-        END;
-    `;
+    const query = "SELECT * FROM delete_student($1)";
     const queryParams = [id];
-    const { rowCount } = await processDBRequest({ query, queryParams });
-    return rowCount;
+    const { rows } = await processDBRequest({ query, queryParams });
+    return rows[0];
 }
 
 module.exports = {
