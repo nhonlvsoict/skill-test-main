@@ -42,13 +42,15 @@ const {
     handleAddStudent,
     handleStudentStatus,
     handleUpdateStudent,
+    handleDeleteStudent
 } = require('../../../src/modules/students/students-controller');
 const {
     getAllStudents,
     addNewStudent,
     getStudentDetail,
     setStudentStatus,
-    updateStudent
+    updateStudent,
+    deleteStudent
 } = require('../../../src/modules/students/students-service');
 
 describe('Students Controller', () => {
@@ -386,4 +388,27 @@ describe('Students Controller', () => {
             await expect(handleStudentStatus(req, res)).rejects.toThrow('Unauthorized');
         });
     });
+
+    describe('handleDeleteStudent', () => {
+        it('should delete student successfully', async () => {
+            // Arrange
+            const userId = '123';
+            const mockResponse = { message: 'Student deleted successfully' };
+            req.params = { id: userId };
+            deleteStudent.mockResolvedValue(mockResponse);  
+            // Act
+            await handleDeleteStudent(req, res);
+            // Assert
+            expect(deleteStudent).toHaveBeenCalledWith(userId);
+            expect(res.json).toHaveBeenCalledWith(mockResponse);
+        });
+        it('should handle service errors', async () => {
+            // Arrange
+            const error = new Error('Delete failed');
+            req.params = { id: '123' };
+            deleteStudent.mockRejectedValue(error);
+            // Act & Assert
+            await expect(handleDeleteStudent(req, res)).rejects.toThrow('Delete failed');
+        });
+    }); 
 });
