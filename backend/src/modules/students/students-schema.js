@@ -33,8 +33,15 @@ const updateStudentStatusSchema = z.object({
     })
 });
 
-// Schema for uget student detail
+// Schema for get student detail
 const getStudentDetailSchema = z.object({
+    params: z.object({
+        id: z.string().regex(/^\d+$/, 'Student ID must be a valid number')
+    })
+});
+
+// Schema for delete student 
+const deleteStudentSchema = z.object({
     params: z.object({
         id: z.string().regex(/^\d+$/, 'Student ID must be a valid number')
     })
@@ -44,5 +51,6 @@ module.exports = {
     addStudentSchema,
     updateStudentSchema,
     updateStudentStatusSchema,
-    getStudentDetailSchema
+    getStudentDetailSchema,
+    deleteStudentSchema
 };

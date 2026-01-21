@@ -6,7 +6,8 @@ const {
     addStudentSchema, 
     updateStudentSchema, 
     updateStudentStatusSchema,
-    getStudentDetailSchema 
+    getStudentDetailSchema,
+    deleteStudentSchema
 } = require("./students-schema");
 const { checkApiAccess } = require("../../middlewares");
 
@@ -15,4 +16,5 @@ router.post("", checkApiAccess, validateRequest(addStudentSchema), studentContro
 router.get("/:id", checkApiAccess, validateRequest(getStudentDetailSchema), studentController.handleGetStudentDetail);
 router.post("/:id/status", checkApiAccess, validateRequest(updateStudentStatusSchema), studentController.handleStudentStatus);
 router.put("/:id", checkApiAccess, validateRequest(updateStudentSchema), studentController.handleUpdateStudent);
+router.delete("/:id", checkApiAccess, validateRequest(deleteStudentSchema), studentController.handleDeleteStudent);
 module.exports = { studentsRoutes: router };
